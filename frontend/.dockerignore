@@ -1,0 +1,33 @@
+# Archivos de desarrollo
+.git
+.gitignore
+README.md
+.env*
+
+# Dependencias y cache
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test
+test/
+integration_test/
+
+# Documentación
+doc/
+docs/

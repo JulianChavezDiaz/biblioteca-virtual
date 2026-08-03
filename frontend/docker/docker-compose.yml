@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  biblioteca-web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8101:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    
+  # Opcional: Base de datos PostgreSQL local
+  # postgres:
+  #   image: postgres:15
+  #   environment:
+  #     POSTGRES_DB: biblioteca
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: password
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+
+# volumes:
+#   postgres_data:

@@ -1,0 +1,41 @@
+name: biblioteca_digital
+description: "Plataforma de biblioteca digital optimizada"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Core - Solo lo esencial
+  supabase_flutter: ^2.5.6
+  
+  # UI básico
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.3.3
+  
+  # Almacenamiento
+  shared_preferences: ^2.2.2
+  
+  # Navegación
+  url_launcher: ^6.3.2
+  
+  # Efectos mínimos
+  animate_do: ^4.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/yavirac.png
+    - assets/images/nuevo.png
+    - assets/images/vision.jpg

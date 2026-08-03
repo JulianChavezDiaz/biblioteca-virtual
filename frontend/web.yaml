@@ -1,0 +1,10 @@
+# Web optimization settings
+web:
+  # Enable tree shaking for smaller bundle size
+  tree-shake-icons: true
+  
+  # Optimize for web
+  web-renderer: canvaskit
+  
+  # Enable source maps for debugging (disable in production)
+  source-maps: false

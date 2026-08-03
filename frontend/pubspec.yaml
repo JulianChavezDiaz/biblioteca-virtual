@@ -1,0 +1,49 @@
+name: biblioteca_digital
+description: "Plataforma de biblioteca digital optimizada"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # UI básico
+  cupertino_icons: ^1.0.8
+  glassmorphism: ^3.0.0
+  google_fonts: ^6.1.0
+  
+  # Almacenamiento
+  shared_preferences: ^2.2.2
+  
+  # Navegación
+  url_launcher: ^6.3.2
+  
+  # Archivos
+  file_picker: ^8.0.0+1
+  
+  # Video
+  youtube_player_iframe: ^5.1.2
+  
+  # PDF
+  pdfrx: ^1.0.88
+  dio: ^5.4.0
+  path_provider: ^2.1.2
+  
+  # Efectos mínimos
+  animate_do: ^4.2.0
+  provider: ^6.1.5+1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
