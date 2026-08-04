@@ -18,7 +18,13 @@ export async function POST(req: NextRequest) {
 
     const form = await req.formData();
     const file = form.get('file');
+    const folder = form.get('folder');
+    
     if (!(file instanceof File)) return fail('Se requiere el campo "file"', 422);
+
+    if (folder !== 'books' && folder !== 'covers') {
+      return fail('El campo "folder" debe ser "books" o "covers"', 422);
+    }
 
     const bytes = Buffer.from(await file.arrayBuffer());
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
