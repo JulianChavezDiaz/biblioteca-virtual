@@ -105,7 +105,7 @@ class ApiClient {
   Future<dynamic> _request(Future<Response> Function() send) async {
     try {
       final res = await send();
-      return res.data;
+      return _normalizePublicUrls(res.data);
     } on DioException catch (e) {
       final data = e.response?.data;
       final message = (data is Map && data['error'] != null)
@@ -113,5 +113,24 @@ class ApiClient {
           : (e.message ?? 'Error de red');
       throw ApiException(message, e.response?.statusCode);
     }
+  }
+
+  /// Normaliza las URLs de libros en cualquier respuesta, incluyendo libros
+  /// anidados en favoritos y estadísticas.
+  dynamic _normalizePublicUrls(dynamic value) {
+    if (value is List) {
+      return value.map(_normalizePublicUrls).toList();
+    }
+
+    if (value is Map) {
+      return value.map((key, item) {
+        if ((key == 'cover_url' || key == 'file_url') && item is String) {
+          return MapEntry(key, ApiConfig.resolvePublicUrl(item));
+        }
+        return MapEntry(key, _normalizePublicUrls(item));
+      });
+    }
+
+    return value;
   }
 }

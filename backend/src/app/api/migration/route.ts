@@ -24,13 +24,13 @@ export async function GET(req: NextRequest) {
       let coverName = "";
       const current = new Date().getTime();
       if (book.file_url && book.file_url.includes('https://pnefkrshzhlelycbxhqg.supabase.co/')) {
-        fileUrl = `uploads/books/${current}.pdf`
+        fileUrl = `/uploads/books/${current}.pdf`
         fileName = `${current}.pdf`
       }
 
       if (book.cover_url && book.cover_url.includes('https://pnefkrshzhlelycbxhqg.supabase.co/')) {
         const extension = book.cover_url.split('.').pop()?.toLowerCase();
-        coverUrl = `uploads/covers/${current}.${extension}`
+        coverUrl = `/uploads/covers/${current}.${extension}`
         coverName = `${current}.${extension}`
       }
 

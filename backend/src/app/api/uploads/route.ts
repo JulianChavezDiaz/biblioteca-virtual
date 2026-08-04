@@ -9,7 +9,7 @@ export const runtime = 'nodejs';
 
 // POST /api/uploads  (multipart, campo "file")
 // Reemplaza Supabase Storage. Guarda libros en public/uploads/books y
-// portadas en public/uploads/covers. Devuelve la URL pública absoluta.
+// portadas en public/uploads/covers. Devuelve una ruta pública portable.
 export async function POST(req: NextRequest) {
   return withErrors(async () => {
     const auth = getAuthUser(req);
@@ -34,6 +34,6 @@ export async function POST(req: NextRequest) {
     await mkdir(dir, { recursive: true });
     await writeFile(path.join(dir, filename), bytes);
 
-    return ok({ url: `${req.nextUrl.origin}/uploads/${folder}/${filename}` }, 201);
+    return ok({ url: `/uploads/${folder}/${filename}` }, 201);
   });
 }
