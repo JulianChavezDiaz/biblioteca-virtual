@@ -14,21 +14,20 @@ export async function GET(req: NextRequest) {
   return withErrors(async () => {
     const { data, error } = await supabase
       .from('videos')
-      .select('*')
-      .limit(5);
+      .select('*');
 
     for (const video of data ?? []) {
       await prisma.video.create({
         data: {
           title: video.title,
           description: video.description,
-          thumbnail_url: video.thumbnail_url,
-          video_id: video.video_id,
+          thumbnailUrl: video.thumbnail_url,
+          videoId: video.video_id,
           category: video.category,
           duration: video.duration,
           views: video.views,
-          created_at: video.created_at,
-          updated_at: video.updated_at,
+          createdAt: video.created_at,
+          updatedAt: video.updated_at,
           subcategory: video.subcategory
         },
       });

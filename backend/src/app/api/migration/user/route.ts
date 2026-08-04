@@ -15,8 +15,7 @@ export async function GET(req: NextRequest) {
   return withErrors(async () => {
     const { data, error } = await supabase
       .from('users')
-      .select('*')
-      .limit(5);
+      .select('*');
 
     for (const user of data ?? []) {
       await prisma.user.create({
@@ -24,9 +23,9 @@ export async function GET(req: NextRequest) {
           email: user.email,
           name: user.name,
           role: user.role,
-          password_hash: await hashPassword('a123456'),
-          created_at: user.created_at,
-          is_active: user.is_active,
+          passwordHash: await hashPassword('a123456'),
+          createdAt:  new Date(user.created_at),
+          isActive: user.is_active,
         },
       });
     }

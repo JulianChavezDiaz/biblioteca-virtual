@@ -15,15 +15,15 @@ export async function GET(req: NextRequest) {
   return withErrors(async () => {
     const { data, error } = await supabase
       .from('categories')
-      .select('*').limit(5);
+      .select('*');
 
     for (const category of data ?? []) {
       await prisma.category.create({
         data: {
           name: category.name,
           description: category.description,
-          created_at: category.created_at,
-          is_active: category.is_active
+          createdAt: category.created_at,
+          isActive: category.is_active
         },
       });
     }
