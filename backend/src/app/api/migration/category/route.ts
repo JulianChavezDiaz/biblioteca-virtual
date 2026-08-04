@@ -14,25 +14,22 @@ export const dynamic = 'force-dynamic';
 export async function GET(req: NextRequest) {
   return withErrors(async () => {
     const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .limit(5);
+      .from('categories')
+      .select('*').limit(5);
 
-    for (const user of data ?? []) {
-      await prisma.user.create({
+    for (const category of data ?? []) {
+      await prisma.category.create({
         data: {
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          password_hash: await hashPassword('a123456'),
-          created_at: user.created_at,
-          is_active: user.is_active,
+          name: category.name,
+          description: category.description,
+          created_at: category.created_at,
+          is_active: category.is_active
         },
       });
     }
 
     if (error) throw error;
 
-    return ok("");
+    return ok(data);
   });
 }
