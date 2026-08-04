@@ -3,6 +3,11 @@ import { prisma } from '@/lib/db';
 import { getAuthUser, hasRole, UPLOAD_ROLES, DELETE_ROLES } from '@/lib/auth';
 import { ok, fail, withErrors } from '@/lib/http';
 import { videoJson } from '@/lib/serializers';
+import {
+  extractYouTubeVideoId,
+  isYouTubeThumbnailFor,
+  youtubeThumbnailUrl,
+} from '@/lib/youtube';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,15 +30,33 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
 
     const { id } = await params;
     const v = await req.json().catch(() => ({}));
+    if (!v?.title?.trim() || !v?.video_id?.trim() || !v?.category?.trim()) {
+      return fail('title, video_id y category son obligatorios', 422);
+    }
+
+    const current = await prisma.video.findUnique({ where: { id } });
+    if (!current) return fail('Video no encontrado', 404);
+
+    const videoId = extractYouTubeVideoId(v.video_id);
+    if (!videoId) return fail('La URL o ID de YouTube no es válido', 422);
+
+    const currentVideoId = extractYouTubeVideoId(current.videoId);
+    const submittedThumbnail = v.thumbnail_url?.trim() || null;
+    const thumbnailUrl =
+      !submittedThumbnail ||
+      (videoId !== currentVideoId &&
+        isYouTubeThumbnailFor(submittedThumbnail, currentVideoId))
+        ? youtubeThumbnailUrl(videoId)
+        : submittedThumbnail;
 
     const video = await prisma.video.update({
       where: { id },
       data: {
-        title: v.title,
+        title: v.title.trim(),
         description: v.description,
-        thumbnailUrl: v.thumbnail_url,
-        videoId: v.video_id,
-        category: v.category,
+        thumbnailUrl,
+        videoId,
+        category: v.category.trim(),
         subcategory: v.subcategory,
         duration: v.duration,
       },

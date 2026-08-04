@@ -427,12 +427,20 @@ class _VideoListWidgetState extends State<VideoListWidget> {
                         return const CircularProgressIndicator(
                             color: Colors.white);
                       }
-                      final categories = snapshot.data!;
+                      final categoryNames = snapshot.data!
+                          .map((category) => category['name']?.toString())
+                          .whereType<String>()
+                          .where((name) => name.isNotEmpty)
+                          .toSet()
+                          .toList();
+                      if (selectedCategory.isEmpty) {
+                        selectedCategory = 'General';
+                      }
+                      if (!categoryNames.contains(selectedCategory)) {
+                        categoryNames.insert(0, selectedCategory);
+                      }
                       return DropdownButtonFormField<String>(
-                        value: categories
-                                .any((cat) => cat['name'] == selectedCategory)
-                            ? selectedCategory
-                            : categories.first['name'],
+                        value: selectedCategory,
                         style: GoogleFonts.outfit(color: Colors.white),
                         dropdownColor: const Color(0xFF1E293B),
                         decoration: InputDecoration(
@@ -444,11 +452,11 @@ class _VideoListWidgetState extends State<VideoListWidget> {
                           focusedBorder: const OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.orange)),
                         ),
-                        items: categories
+                        items: categoryNames
                             .map<DropdownMenuItem<String>>(
                                 (category) => DropdownMenuItem(
-                                      value: category['name'],
-                                      child: Text(category['name']),
+                                      value: category,
+                                      child: Text(category),
                                     ))
                             .toList(),
                         onChanged: (value) =>
@@ -469,28 +477,39 @@ class _VideoListWidgetState extends State<VideoListWidget> {
             TextButton(
               onPressed: () async {
                 try {
-                  await VideoService().updateVideo(video['id'], {
-                    'title': titleController.text,
-                    'video_id': urlController.text,
+                  if (titleController.text.trim().isEmpty ||
+                      urlController.text.trim().isEmpty) {
+                    throw Exception('Título y URL del video son obligatorios');
+                  }
+
+                  final updatedVideo =
+                      await VideoService().updateVideo(video['id'], {
+                    'title': titleController.text.trim(),
+                    'video_id': urlController.text.trim(),
                     'description': descriptionController.text.isEmpty
                         ? null
                         : descriptionController.text,
-                    'category': selectedCategory,
+                    'category': selectedCategory.trim(),
                     'thumbnail_url': thumbnailController.text.isEmpty
                         ? null
                         : thumbnailController.text,
                   });
+                  video
+                    ..clear()
+                    ..addAll(updatedVideo);
 
                   Navigator.pop(context);
+                  if (!mounted) return;
                   widget.onRefresh();
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  ScaffoldMessenger.of(this.context).showSnackBar(
                     SnackBar(
                         content: Text('Video actualizado correctamente',
                             style: GoogleFonts.outfit()),
                         backgroundColor: Colors.green),
                   );
                 } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(this.context).showSnackBar(
                     SnackBar(
                         content: Text('Error al actualizar: $e',
                             style: GoogleFonts.outfit()),

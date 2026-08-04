@@ -84,6 +84,23 @@ class OptimizedCacheService {
     await _prefs?.remove(key);
   }
 
+  Future<void> removeByPrefixes(Iterable<String> prefixes) async {
+    await init();
+    final matches = (_prefs?.getKeys() ?? <String>{})
+        .where((key) => prefixes.any((prefix) => key.startsWith(prefix)))
+        .toSet();
+    matches.addAll(
+      _memoryCache.keys
+          .where((key) => prefixes.any((prefix) => key.startsWith(prefix))),
+    );
+
+    for (final key in matches) {
+      _memoryCache.remove(key);
+      _cacheTimestamps.remove(key);
+      await _prefs?.remove(key);
+    }
+  }
+
   void clearMemory() {
     _memoryCache.clear();
     _cacheTimestamps.clear();

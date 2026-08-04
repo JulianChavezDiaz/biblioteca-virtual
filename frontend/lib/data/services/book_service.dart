@@ -1,4 +1,6 @@
 import '../api/api_client.dart';
+import '../../core/services/optimized_cache_service.dart';
+import 'cache_service.dart';
 
 /// Acceso a libros vía API HTTP. Devuelve mapas en snake_case (igual que antes
 /// devolvía Supabase), por lo que `BookModel.fromJson` funciona sin cambios.
@@ -35,14 +37,26 @@ class BookService {
 
   Future<Map<String, dynamic>?> createBook(Map<String, dynamic> data) async {
     final res = await _api.post('/books', data: data);
+    await _clearBookCaches();
     return Map<String, dynamic>.from(res as Map);
   }
 
-  Future<void> updateBook(String id, Map<String, dynamic> data) async {
-    await _api.put('/books/$id', data: data);
+  Future<Map<String, dynamic>> updateBook(
+      String id, Map<String, dynamic> data) async {
+    final res = await _api.put('/books/$id', data: data);
+    await _clearBookCaches();
+    return Map<String, dynamic>.from(res as Map);
   }
 
   Future<void> deleteBook(String id) async {
     await _api.delete('/books/$id');
+    await _clearBookCaches();
+  }
+
+  Future<void> _clearBookCaches() async {
+    CacheService.clearAll();
+    await OptimizedCacheService.instance.removeByPrefixes(
+      const ['top_books', 'recent_books', 'books_page_'],
+    );
   }
 }

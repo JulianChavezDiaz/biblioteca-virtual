@@ -33,8 +33,10 @@ class VideoService {
     return Map<String, dynamic>.from(res as Map);
   }
 
-  Future<void> updateVideo(String id, Map<String, dynamic> data) async {
-    await _api.put('/videos/$id', data: data);
+  Future<Map<String, dynamic>> updateVideo(
+      String id, Map<String, dynamic> data) async {
+    final res = await _api.put('/videos/$id', data: data);
+    return Map<String, dynamic>.from(res as Map);
   }
 
   Future<void> deleteVideo(String id) async {

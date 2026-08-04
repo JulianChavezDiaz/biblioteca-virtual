@@ -202,7 +202,18 @@ class _FlipBookReaderState extends State<FlipBookReader>
 
       print('📱 Cargando PDF en móvil...');
       final dir = await getApplicationDocumentsDirectory();
-      final fileName = '${widget.book['id']}.pdf';
+      final uri = Uri.tryParse(url);
+      final sourceName = uri != null && uri.pathSegments.isNotEmpty
+          ? uri.pathSegments.last
+          : '';
+      final safeName = sourceName.replaceAll(
+        RegExp(r'[^a-zA-Z0-9._-]'),
+        '_',
+      );
+      final version = safeName.isNotEmpty
+          ? safeName
+          : url.hashCode.abs().toString();
+      final fileName = '${widget.book['id']}_$version';
       final file = File('${dir.path}/$fileName');
       print('📁 Ruta del archivo: ${file.path}');
 

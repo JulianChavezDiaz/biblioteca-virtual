@@ -504,6 +504,11 @@ class _BookListWidgetState extends State<BookListWidget> {
                                                     result.files.single.bytes!;
                                                 selectedFileName =
                                                     result.files.single.name;
+                                                selectedFormat = selectedFileName!
+                                                        .toLowerCase()
+                                                        .endsWith('.epub')
+                                                    ? 'epub'
+                                                    : 'pdf';
                                               });
                                             }
                                           } catch (e) {
@@ -834,6 +839,22 @@ class _BookListWidgetState extends State<BookListWidget> {
                   print('📝 URL de portada: ${coverUrlController.text}');
 
                   String? finalCoverUrl;
+                  String? finalFileUrl = book['file_url'];
+
+                  if (!isPhysical) {
+                    if (useFileUpload) {
+                      if (selectedFile == null || selectedFileName == null) {
+                        throw Exception(
+                            'Selecciona el archivo PDF o EPUB nuevo');
+                      }
+                      final fileName =
+                          '${DateTime.now().millisecondsSinceEpoch}_$selectedFileName';
+                      finalFileUrl = await UploadService()
+                          .uploadBook(selectedFile!, fileName);
+                    } else if (fileUrlController.text.trim().isNotEmpty) {
+                      finalFileUrl = fileUrlController.text.trim();
+                    }
+                  }
 
                   // Subir portada si se seleccionó archivo
                   if (useCoverUpload && selectedCover != null) {
@@ -850,6 +871,7 @@ class _BookListWidgetState extends State<BookListWidget> {
                       }
                     } catch (storageError) {
                       print('❌ Error subiendo portada: $storageError');
+                      rethrow;
                     }
                   } else if (!useCoverUpload &&
                       coverUrlController.text.isNotEmpty) {
@@ -866,7 +888,7 @@ class _BookListWidgetState extends State<BookListWidget> {
                     'description': descriptionController.text.isEmpty
                         ? null
                         : descriptionController.text,
-                    'file_url': fileUrlController.text,
+                    'file_url': finalFileUrl,
                     'cover_url': finalCoverUrl,
                     'isbn': isbnController.text.isEmpty
                         ? null
@@ -885,36 +907,18 @@ class _BookListWidgetState extends State<BookListWidget> {
 
                   print('📝 Datos a actualizar: $updateData');
 
-                  await BookService().updateBook(book['id'], updateData);
+                  final updatedBook =
+                      await BookService().updateBook(book['id'], updateData);
+                  book
+                    ..clear()
+                    ..addAll(updatedBook);
 
                   print('✅ Libro actualizado');
 
                   Navigator.pop(context);
-                  print('🔄 Llamando onRefresh...');
-                  // Forzar limpieza de caché y refresh
-                  Future.microtask(() {
-                    widget.onRefresh();
-                    // Segundo refresh después de un delay
-                    Future.delayed(const Duration(milliseconds: 500), () {
-                      widget.onRefresh();
-                    });
-                  });
-                  print('🔄 onRefresh completado');
-
-                  // Forzar rebuild del widget padre
-                  if (context.mounted) {
-                    print('🔄 Forzando rebuild...');
-                    // Limpiar caché si existe
-                    try {
-                      print('🗑️ Limpiando caché...');
-                      // Simplemente hacer refresh sin limpiar caché
-                      await Future.delayed(const Duration(milliseconds: 100));
-                      widget.onRefresh();
-                    } catch (e) {
-                      print('Error en segundo refresh: $e');
-                    }
-                  }
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  if (!mounted) return;
+                  widget.onRefresh();
+                  ScaffoldMessenger.of(this.context).showSnackBar(
                     SnackBar(
                         content: Text('Libro actualizado correctamente',
                             style: GoogleFonts.outfit()),
@@ -922,8 +926,8 @@ class _BookListWidgetState extends State<BookListWidget> {
                   );
                 } catch (e) {
                   print('❌ Error actualizando libro: $e');
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                  if (mounted) {
+                    ScaffoldMessenger.of(this.context).showSnackBar(
                       SnackBar(
                           content: Text('Error al actualizar: $e',
                               style: GoogleFonts.outfit()),
