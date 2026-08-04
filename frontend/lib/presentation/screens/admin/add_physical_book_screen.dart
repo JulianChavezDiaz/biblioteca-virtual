@@ -91,8 +91,8 @@ class _AddPhysicalBookScreenState extends State<AddPhysicalBookScreen> {
               '${DateTime.now().millisecondsSinceEpoch}_cover_${_titleController.text.replaceAll(' ', '_')}.jpg';
 
           if (_selectedCover!.bytes != null) {
-            coverUrl =
-                await UploadService().upload(_selectedCover!.bytes!, coverName);
+            coverUrl = await UploadService()
+                .uploadCover(_selectedCover!.bytes!, coverName);
           }
         } catch (storageError) {
           print('Error subiendo portada: $storageError');

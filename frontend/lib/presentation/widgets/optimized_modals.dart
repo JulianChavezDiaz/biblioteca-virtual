@@ -559,8 +559,8 @@ class _AddBookFormState extends State<_AddBookForm> {
               '${DateTime.now().millisecondsSinceEpoch}_cover_${_titleController.text.replaceAll(' ', '_')}.jpg';
 
           if (_selectedCover!.bytes != null) {
-            coverUrl =
-                await UploadService().upload(_selectedCover!.bytes!, coverName);
+            coverUrl = await UploadService()
+                .uploadCover(_selectedCover!.bytes!, coverName);
           }
         } catch (storageError) {
           print('Error subiendo portada: $storageError');
@@ -778,7 +778,8 @@ class _AddBookFormState extends State<_AddBookForm> {
       final fileName =
           '${DateTime.now().millisecondsSinceEpoch}_$_selectedFileName';
 
-      final publicUrl = await UploadService().upload(_selectedFile!, fileName);
+      final publicUrl =
+          await UploadService().uploadBook(_selectedFile!, fileName);
 
       return publicUrl;
     } catch (e) {

@@ -70,9 +70,14 @@ class ApiClient {
 
   /// Sube un archivo (multipart) y devuelve la URL pública.
   /// Reemplaza a Supabase Storage.
-  Future<String> uploadFile(List<int> bytes, String filename) async {
+  Future<String> uploadFile(
+    List<int> bytes,
+    String filename, {
+    required String folder,
+  }) async {
     final form = FormData.fromMap({
       'file': MultipartFile.fromBytes(bytes, filename: filename),
+      'folder': folder,
     });
     final data = await _request(() => _dio.post('/uploads', data: form));
     return Map<String, dynamic>.from(data as Map)['url'] as String;

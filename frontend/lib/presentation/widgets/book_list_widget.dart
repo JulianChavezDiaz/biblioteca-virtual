@@ -844,7 +844,7 @@ class _BookListWidgetState extends State<BookListWidget> {
 
                       if (selectedCover!.bytes != null) {
                         finalCoverUrl = await UploadService()
-                            .upload(selectedCover!.bytes!, coverName);
+                            .uploadCover(selectedCover!.bytes!, coverName);
 
                         print('📝 Nueva URL de portada: $finalCoverUrl');
                       }

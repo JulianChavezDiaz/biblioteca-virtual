@@ -161,8 +161,8 @@ class _AddBookScreenState extends State<AddBookScreen> {
 
           if (_selectedFile!.bytes != null) {
             print('🔍 DEBUG: Iniciando upload...');
-            fileUrl =
-                await UploadService().upload(_selectedFile!.bytes!, fileName);
+            fileUrl = await UploadService()
+                .uploadBook(_selectedFile!.bytes!, fileName);
             print('🔍 DEBUG: URL obtenida: $fileUrl');
           }
         } catch (storageError) {
@@ -195,8 +195,8 @@ class _AddBookScreenState extends State<AddBookScreen> {
               '${DateTime.now().millisecondsSinceEpoch}_cover_${_titleController.text.replaceAll(' ', '_')}.jpg';
 
           if (_selectedCover!.bytes != null) {
-            coverUrl =
-                await UploadService().upload(_selectedCover!.bytes!, coverName);
+            coverUrl = await UploadService()
+                .uploadCover(_selectedCover!.bytes!, coverName);
           }
         } catch (storageError) {
           // Si falla el storage de portadas, continuar sin portada

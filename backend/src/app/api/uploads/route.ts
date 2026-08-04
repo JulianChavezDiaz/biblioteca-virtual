@@ -8,8 +8,8 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 // POST /api/uploads  (multipart, campo "file")
-// Reemplaza Supabase Storage. Guarda en public/uploads y sirve el archivo en
-// /uploads/<nombre>. Devuelve { url } absoluto.
+// Reemplaza Supabase Storage. Guarda libros en public/uploads/books y
+// portadas en public/uploads/covers. Devuelve la URL pública absoluta.
 export async function POST(req: NextRequest) {
   return withErrors(async () => {
     const auth = getAuthUser(req);
@@ -30,10 +30,10 @@ export async function POST(req: NextRequest) {
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
     const filename = `${Date.now()}_${safeName}`;
 
-    const dir = path.join(process.cwd(), 'public', 'uploads');
+    const dir = path.join(process.cwd(), 'public', 'uploads', folder);
     await mkdir(dir, { recursive: true });
     await writeFile(path.join(dir, filename), bytes);
 
-    return ok({ url: `${req.nextUrl.origin}/uploads/${filename}` }, 201);
+    return ok({ url: `${req.nextUrl.origin}/uploads/${folder}/${filename}` }, 201);
   });
 }
