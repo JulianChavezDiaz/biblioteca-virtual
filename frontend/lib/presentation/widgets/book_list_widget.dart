@@ -860,8 +860,7 @@ class _BookListWidgetState extends State<BookListWidget> {
                   if (useCoverUpload && selectedCover != null) {
                     print('📝 Subiendo nueva portada...');
                     try {
-                      final coverName =
-                          '${DateTime.now().millisecondsSinceEpoch}_cover_${titleController.text.replaceAll(' ', '_')}.jpg';
+                      final coverName = selectedCover!.name;
 
                       if (selectedCover!.bytes != null) {
                         finalCoverUrl = await UploadService()

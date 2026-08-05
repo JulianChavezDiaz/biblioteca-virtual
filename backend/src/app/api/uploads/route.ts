@@ -26,9 +26,23 @@ export async function POST(req: NextRequest) {
       return fail('El campo "folder" debe ser "books" o "covers"', 422);
     }
 
+    const extension = path.extname(file.name).toLowerCase();
+    const allowedExtensions =
+      folder === 'books'
+        ? new Set(['.pdf', '.epub'])
+        : new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif']);
+
+    if (!allowedExtensions.has(extension)) {
+      return fail(
+        folder === 'books'
+          ? 'Los libros deben tener extensión PDF o EPUB'
+          : 'Las portadas deben ser imágenes JPG, JPEG, PNG, WEBP o GIF',
+        422,
+      );
+    }
+
     const bytes = Buffer.from(await file.arrayBuffer());
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const filename = `${Date.now()}_${safeName}`;
+    const filename = `${Date.now()}${extension}`;
 
     const dir = path.join(process.cwd(), 'public', 'uploads', folder);
     await mkdir(dir, { recursive: true });

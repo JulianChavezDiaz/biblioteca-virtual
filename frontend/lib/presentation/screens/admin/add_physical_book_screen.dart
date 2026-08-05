@@ -87,8 +87,7 @@ class _AddPhysicalBookScreenState extends State<AddPhysicalBookScreen> {
       // Subir portada si es local
       if (_selectedCover != null) {
         try {
-          final coverName =
-              '${DateTime.now().millisecondsSinceEpoch}_cover_${_titleController.text.replaceAll(' ', '_')}.jpg';
+          final coverName = _selectedCover!.name;
 
           if (_selectedCover!.bytes != null) {
             coverUrl = await UploadService()

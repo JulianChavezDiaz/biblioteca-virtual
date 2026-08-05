@@ -191,8 +191,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
       // Solo subir portada si NO es libro físico exclusivo
       if (!isPhysicalOnly && _selectedCover != null) {
         try {
-          final coverName =
-              '${DateTime.now().millisecondsSinceEpoch}_cover_${_titleController.text.replaceAll(' ', '_')}.jpg';
+          final coverName = _selectedCover!.name;
 
           if (_selectedCover!.bytes != null) {
             coverUrl = await UploadService()
